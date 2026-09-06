@@ -1,3 +1,10 @@
+# Regra genérica: .tex -> .pdf (slides e sucintas)
+# Duas passadas explícitas: a barra de progresso do rodapé depende da 2ª,
+# e o latexmk sozinho para na 1ª passada (overflow aritmético do total=0).
+%.pdf: %.tex
+	xelatex -interaction=nonstopmode $< >/dev/null 2>&1
+	xelatex -interaction=nonstopmode $< >/dev/null 2>&1
+
 # Extensões de arquivos temporários gerados pela compilação LaTeX (beamer)
 clean:
 	find . -type f \
