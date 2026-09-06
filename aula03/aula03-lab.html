@@ -114,8 +114,8 @@ input[type=range]{width:100%; accent-color:var(--acc)}
 
 footer{max-width:1240px; margin:0 auto; padding:0 1.2rem 1.5rem; color:var(--cinza); font-size:.75rem}
 kbd{font:600 .72rem var(--mono); background:#fff; border:1px solid var(--linha); border-bottom-width:2px; border-radius:4px; padding:.05rem .35rem}
-.d1{--acc:var(--ciano)} .d2{--acc:var(--dourado)} .d3{--acc:var(--magenta)} .d4{--acc:var(--verde)}
-.tab[data-acc="verde"]{--acc:var(--verde)}
+.d1{--acc:var(--ciano)} .d2{--acc:var(--dourado)} .d3{--acc:var(--magenta)} .d4{--acc:var(--verde)} .d5{--acc:var(--azul)}
+.tab[data-acc="verde"]{--acc:var(--verde)} .tab[data-acc="azul"]{--acc:var(--azul)}
 .tally{display:grid; grid-template-columns:1fr 1fr; gap:.4rem; margin-top:.5rem}
 .tally div{background:var(--fundo); border-radius:6px; padding:.45rem .6rem; font:600 .74rem var(--mono); color:var(--cinza); line-height:1.45}
 .tally b{display:block; font-size:1.15rem; color:var(--tinta)}
@@ -186,11 +186,12 @@ dialog#janela-ajuda::backdrop, dialog#janela-codigo::backdrop{background:rgba(22
     <div class="sub"></div>
   </div>
   <nav role="tablist" aria-label="Experimentos">
-    <span class="atalho">1·2·3·4 troca &nbsp; espaço roda</span>
+    <span class="atalho">1·2·3·4·5 troca &nbsp; espaço roda</span>
     <button class="tab" role="tab" id="tab1" data-acc="ciano"   aria-selected="true"  aria-controls="demo1"><span class="num">1</span>Perceptron</button>
     <button class="tab" role="tab" id="tab2" data-acc="dourado" aria-selected="false" aria-controls="demo2"><span class="num">2</span>Degrau × Sigmoide</button>
     <button class="tab" role="tab" id="tab3" data-acc="magenta" aria-selected="false" aria-controls="demo3"><span class="num">3</span>ERM ao vivo</button>
     <button class="tab" role="tab" id="tab4" data-acc="verde"   aria-selected="false" aria-controls="demo4"><span class="num">4</span>Bússola do gradiente</button>
+    <button class="tab" role="tab" id="tab5" data-acc="azul"    aria-selected="false" aria-controls="demo5"><span class="num">5</span>Média de k inícios</button>
   </nav>
 </header>
 
@@ -298,7 +299,7 @@ dialog#janela-ajuda::backdrop, dialog#janela-codigo::backdrop{background:rgba(22
   <div class="observar">
     <h3>Para conduzir em aula</h3>
     <ul>
-      <li>Deslize b devagar: a escada (erro 0/1) só salta quando b cruza um ponto; a curva suave muda <em>sempre</em> — e a inclinação diz para onde ir.</li>
+      <li>Deslize b devagar: a escada (erro 0/1) só salta quando b cruza um ponto; a curva suave muda <em>sempre</em> — e a inclinação diz para onde ir. A sombra cinza mostra a CE por cima da escada: limitante superior do erro 0/1.</li>
       <li>Clique “▼ no erro 0/1” com b num platô: nada acontece. Depois “▼ na perda contínua”: b desliza sozinho ao mínimo.</li>
       <li>Aumente k: a sigmoide vira quase um degrau — e a perda contínua começa a virar escada. O que isso sugere sobre gradientes que “somem”?</li>
     </ul>
@@ -357,7 +358,7 @@ dialog#janela-ajuda::backdrop, dialog#janela-codigo::backdrop{background:rgba(22
       <div class="linha-botoes">
         <button class="btn" id="m-codigo">▶ Ver código PyTorch</button>
       </div>
-      <h3>Risco empírico por época <button class="ajuda" data-ajuda="d3-risco" aria-label="Ajuda: risco empírico R̂">?</button></h3>
+      <h3>Risco empírico por época <button class="ajuda" data-ajuda="d3-risco" aria-label="Ajuda: risco empírico R̂">?</button> <button class="ajuda" data-ajuda="d3-porque" aria-label="Ajuda: por que entropia cruzada e não o erro 0/1">?</button></h3>
       <canvas id="c3loss" width="300" height="110" aria-label="Curva do risco empírico ao longo das épocas"></canvas>
       <div class="log" id="m-log">Cada quadro executa alguns passos de gradiente sobre o risco empírico R̂(W) = média da entropia cruzada nas 240 amostras.</div>
       <div class="aviso" id="m-aviso"><b>Rede de degraus:</b> a derivada é 0 em toda parte ⇒ o backward devolve gradiente nulo ⇒ <em>nenhum peso se move</em>. O erro fica num platô — foi isso que paralisou a área até a virada diferenciável.</div>
@@ -447,11 +448,71 @@ dialog#janela-ajuda::backdrop, dialog#janela-codigo::backdrop{background:rgba(22
   </div>
 </section>
 
+<!-- ================================================================
+     DEMO 5 — k pontos de partida e a média dos parâmetros
+================================================================ -->
+<section class="demo d5" id="demo5" role="tabpanel" aria-labelledby="tab5">
+  <div class="titulo-demo">
+    <h2>k pontos de partida, uma média <button class="ajuda" data-ajuda="d5-geral" aria-label="Ajuda: o que este demo mostra">?</button></h2>
+    <span class="tese">o mesmo neurônio da Aba 4 desce a paisagem a partir de <b>k</b> pontos iniciais diferentes. No final, a <b>média θ̄</b> dos parâmetros encontrados define uma nova função — compare com as k soluções e com o alvo.</span>
+  </div>
+  <div class="grade">
+    <div class="palco">
+      <div class="hud">
+        <span>k = <b id="v5-k">6</b></span>
+        <span>paradas <b id="v5-feitas">0/6</b></span>
+        <span class="badge" id="v5-badge">parado</span>
+      </div>
+      <canvas id="c5" width="960" height="560" aria-label="Paisagem do erro nos parâmetros com k trajetórias de descida; ao lado, as curvas das k soluções e a média dos parâmetros"></canvas>
+      <div class="legenda">
+        <span><i style="background:transparent;border:2px solid var(--cinza);border-radius:50%"></i>ponto de partida</span>
+        <span><i style="background:var(--dourado)"></i>onde a descida parou</span>
+        <span style="color:var(--azul)">● θ̄ — média dos parâmetros</span>
+        <span style="color:var(--cinza)">curvas cinza = k soluções</span>
+      </div>
+    </div>
+    <aside class="painel">
+      <h3>Superfície (função-alvo)</h3>
+      <div class="linha-botoes">
+        <button class="btn ligado" data-g5="sig">Sigmoide</button>
+        <button class="btn" data-g5="reta">Reta</button>
+        <button class="btn" data-g5="degrau">Degrau</button>
+        <button class="btn" data-g5="pulso">Pulso</button>
+      </div>
+      <div class="campo" style="margin-top:.7rem">
+        <label>k pontos de início <output id="v5-k-out">6</output></label>
+        <input type="range" id="v5-k-sl" min="2" max="12" step="1" value="6">
+      </div>
+      <h3>Descidas</h3>
+      <div class="linha-botoes">
+        <button class="btn primario" id="v5-run">▶ Rodar k descidas</button>
+        <button class="btn" id="v5-reset">Novos inícios</button>
+      </div>
+      <h3>Média dos parâmetros <button class="ajuda" data-ajuda="d5-media" aria-label="Ajuda: média dos parâmetros">?</button></h3>
+      <div class="tally">
+        <div><b id="v5-tb">—</b>θ̄ = (w̄, b̄)</div>
+        <div><b id="v5-ltb">—</b>L(θ̄) na média</div>
+        <div><b id="v5-melhor">—</b>melhor L individual</div>
+        <div><b id="v5-gap">—</b>folga L(θ̄) − melhor</div>
+      </div>
+      <div class="log" id="v5-log">6 pontos de partida sorteados. Rode as descidas — no final, a curva azul mostra a média θ̄ dos parâmetros.</div>
+    </aside>
+  </div>
+  <div class="observar">
+    <h3>Para conduzir em aula</h3>
+    <ul>
+      <li>Na Sigmoide, todas as k descidas chegam ao mesmo vale: θ̄ também está nele. A média é redundante quando a paisagem é boa.</li>
+      <li>No Pulso as paradas se espalham; no Degrau, todas morrem no platô da borda (o vale fugiu do mapa). Em ambos, L(θ̄) pode superar o melhor individual — confira a folga no placar.</li>
+      <li>Rode com k = 2 e depois k = 12: mais inícios não mudam a média na Sigmoide, mas mudam no Pulso. Por quê?</li>
+    </ul>
+  </div>
+</section>
+
 </main>
 
 <footer>
   Material de apoio da Aula 3 (Aprendendo a rede — Parte 1), adaptada da Lecture 3 do 11-785/CMU.
-  Atalhos: <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd> trocam de experimento · <kbd>espaço</kbd> inicia/pausa o experimento visível.
+  Atalhos: <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd> <kbd>5</kbd> trocam de experimento · <kbd>espaço</kbd> inicia/pausa o experimento visível.
   Tudo roda localmente — nenhum dado sai do navegador.
 </footer>
 
@@ -513,11 +574,12 @@ const AJUDA = {
   <p>Errou um positivo (y = +1)? Soma o ponto: a reta gira para incluí-lo. Errou um negativo? Subtrai. A correção <b>conserta aquela amostra</b> — mas pode estragar outra.</p>
   <p><b>Convergência:</b> se existir reta perfeita (separável), o algoritmo a encontra em passos finitos — limitante (R/γ)². Sem reta perfeita, corrige para sempre.</p>`},
 'd2-geral':{t:'Objetivo: sentir a falta de gradiente', html:`
-  <p><b>Objetivo:</b> sentir por que a escada não dá direção e por que a perda contínua é a bússola — a ponte para a descida de gradiente.</p>
+  <p><b>Objetivo:</b> sentir por que a escada não dá direção e por que a perda contínua é a bússola.</p>
   <p>Painéis: dados 1D com a sigmoide (topo), erro 0/1 × b (meio), perda contínua × b (baixo).</p>
   <ul>
-    <li><b>Erro 0/1</b> — fração mal classificada: escada, plana entre os pontos.</li>
-    <li><b>Perda contínua</b> — entropia cruzada média: curva suave, com inclinação em todo lugar.</li>
+    <li><b>Erro 0/1</b> — fração mal classificada: escada plana.</li>
+    <li><b>Sombra cinza</b> — CE/ln 2 cobre a escada: a entropia cruzada é limitante superior do erro 0/1.</li>
+    <li><b>Perda contínua</b> — entropia cruzada média: curva suave.</li>
     <li><b>Ponto dourado</b> — posição atual de b nas duas curvas.</li>
   </ul>`},
 'd2-modelo':{t:'Modelo p = σ(k·(x − b))', html:`
@@ -571,6 +633,12 @@ const AJUDA = {
     <li>Curva descendo — aprendendo.</li>
     <li>Curva em <b>linha reta</b> — nada se move (ex.: rede de degraus).</li>
   </ul>`},
+'d3-porque':{t:'Por que entropia cruzada, e não o erro 0/1?', html:`
+  <p>Para o gradiente descer, a perda precisa de <b>derivada</b>. O erro 0/1 é uma escada: derivada 0 em quase toda parte. A entropia cruzada é suave:</p>
+  <span class="eq">L = −(1/N)·Σ [yᵢ·ln pᵢ + (1−yᵢ)·ln(1−pᵢ)]</span>
+  <p>Com sigmoide na saída, a derivada em relação ao logito z (entrada da sigmoide) vira:</p>
+  <span class="eq">∂L/∂z = p − y</span>
+  <p>É o <b>delta = p − y</b> que o backward da tela propaga; confiança errada custa caro (p ≈ 0, y = 1).</p>`},
 'd4-geral':{t:'Os três painéis da bússola', html:`
   <p><b>Mapa</b> — o erro L(w, b) para cada par de parâmetros do neurônio ŷ = σ(w·x + b). Claro = vale, escuro = topo. L é o erro quadrático médio: cada função-alvo desenha uma superfície de outra forma.</p>
   <p><b>Ajuste</b> — o que (w, b) representa nos dados: a curva do neurônio e os traços vermelhos (erro por amostra).</p>
@@ -610,6 +678,18 @@ const AJUDA = {
     <li>Em d dimensões a projeção útil cai como 1/√d: em d = 10⁹, praticamente nada.</li>
   </ul>
   <p>Uma rede real tem 10⁶–10⁹ pesos — tentar direções sorteadas não escala; a derivada vence.</p>`},
+'d5-geral':{t:'k descidas, uma média', html:`
+  <p>O neurônio ŷ = σ(w·x + b) desce a mesma paisagem L da Aba 4, de <b>k pontos iniciais</b> diferentes — mesmo passo, mesma regra de parada.</p>
+  <ul>
+    <li><b>Traço dourado</b> — trajetória de uma descida; branco = partida, dourado = parada.</li>
+    <li><b>Ajuste</b> — curvas cinza: as k soluções. No final, a <b>curva azul</b> é a média θ̄ dos parâmetros.</li>
+  </ul>
+  <p>Com paisagens ruins (Pulso, Degrau), param espalhadas ou morrem em platôs — a média reúne o que sobrou.</p>`},
+'d5-media':{t:'Média dos parâmetros θ̄', html:`
+  <p>θ̄ = (1/k)·Σ θᵢ — cada θᵢ = (wᵢ, bᵢ) é onde uma descida parou.</p>
+  <span class="eq">w̄ = (1/k)·Σ wᵢ &nbsp;&nbsp; b̄ = (1/k)·Σ bᵢ</span>
+  <p>A curva azul é σ(w̄·x + b̄): uma função que nenhuma descida encontrou — veio da média delas.</p>
+  <p><b>Atenção:</b> em paisagens não convexas, θ̄ não precisa ser um vale: L(θ̄) pode superar o melhor individual (veja a folga no placar).</p>`},
 };
 
 (function(){
@@ -742,8 +822,8 @@ $('cod-bloco').textContent = CODIGO_PYTORCH;
 })();
 
 /* ================= abas ================= */
-const tabs = [ $('tab1'), $('tab2'), $('tab3'), $('tab4') ];
-const demos = [ $('demo1'), $('demo2'), $('demo3'), $('demo4') ];
+const tabs = [ $('tab1'), $('tab2'), $('tab3'), $('tab4'), $('tab5') ];
+const demos = [ $('demo1'), $('demo2'), $('demo3'), $('demo4'), $('demo5') ];
 let demoAtiva = 0;
 function trocaDemo(i){
   demoAtiva = i;
@@ -754,8 +834,8 @@ tabs.forEach((t,i)=>t.addEventListener('click', ()=>trocaDemo(i)));
 document.addEventListener('keydown', e=>{
   if(e.target.tagName==='INPUT') return;
   if($('janela-ajuda').open || $('janela-codigo').open) return;   // atalhos pausados com diálogo aberto
-  if(e.key>='1' && e.key<='4') trocaDemo(+e.key-1);
-  if(e.key===' '){ e.preventDefault(); [togglePerceptron, null, toggleTreino, toggleBussola][demoAtiva]?.(); }
+  if(e.key>='1' && e.key<='5') trocaDemo(+e.key-1);
+  if(e.key===' '){ e.preventDefault(); [togglePerceptron, null, toggleTreino, toggleBussola, toggleMedia][demoAtiva]?.(); }
 });
 
 /* ============================================================
@@ -992,7 +1072,8 @@ let togglePerceptron, toggleBussola;
         ctx.beginPath(); ctx.arc(cx,cy,9,0,7); ctx.stroke(); }
     }
     // ---- painéis 2 e 3: perdas em função de b
-    curva(P2, erro01, COR.carmim, 'Erro 0/1(b) — a escada sem derivada', false);
+    const escY = curva(P2, erro01, COR.carmim, 'Erro 0/1(b) — a escada sem derivada', false);
+    sombraCE(P2, escY);
     curva(P3, bce,    COR.magenta,'Perda contínua(b) — entropia cruzada', true);
   }
   function curva(P, f, cor, titulo, tangente){
@@ -1021,6 +1102,28 @@ let togglePerceptron, toggleBussola;
       ctx.lineTo(x2-10*Math.cos(a+0.45),y2-10*Math.sin(a+0.45));
       ctx.closePath(); ctx.fill(); ctx.restore();
     }
+    return Y;
+  }
+  // entropia cruzada normalizada (÷ ln 2) por cima da escada: limitante superior do erro 0/1
+  function sombraCE(P, Y){
+    const n=260, cima=[], baixo=[];
+    for(let i=0;i<=n;i++){ const b=-1.2+2.4*i/n, x=bx(P,b);
+      cima.push({x, y:Math.max(P.y, Y(bce(b)/Math.LN2))});
+      baixo.push({x, y:Math.max(P.y, Y(erro01(b)))});
+    }
+    // sombra entre a escada e o limitante
+    ctx.fillStyle='rgba(85,96,122,0.14)';
+    ctx.beginPath();
+    cima.forEach((pt,i)=> i?ctx.lineTo(pt.x,pt.y):ctx.moveTo(pt.x,pt.y));
+    for(let i=baixo.length-1;i>=0;i--) ctx.lineTo(baixo[i].x, baixo[i].y);
+    ctx.closePath(); ctx.fill();
+    // linha cinza do limitante
+    ctx.strokeStyle='rgba(85,96,122,0.9)'; ctx.lineWidth=1.8; ctx.setLineDash([6,4]);
+    ctx.beginPath();
+    cima.forEach((pt,i)=> i?ctx.lineTo(pt.x,pt.y):ctx.moveTo(pt.x,pt.y));
+    ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle=COR.cinza; ctx.font='bold 12px "Fira Mono",monospace';
+    ctx.fillText('CE/ln 2 = limitante superior', P.x+8, P.y+18);
   }
   function atualiza(){
     desenha();
@@ -1534,6 +1637,195 @@ let toggleTreino;
   })();
 
   geraDados(); precomputaMapa(); reinicia([-5.5,5.5]);
+})();
+
+/* ============================================================
+   DEMO 5 — k pontos de partida e a média dos parâmetros
+   Mesma paisagem da aba 4; k descidas simultâneas (mesmo passo,
+   mesma regra de parada) e a função σ(w̄·x + b̄) da média θ̄.
+============================================================ */
+let toggleMedia;
+(function(){
+  const {ctx, W, H} = setupCanvas($('c5'));
+  // painéis: mapa (esquerda, quadrado) e ajuste (direita)
+  const M={x:56, y:30, w:500, h:500};                 // mapa de L(w,b)
+  const F={x:M.x+M.w+70, y:30, w:W-(M.x+M.w+70)-24, h:500};   // ajuste da função
+
+  const RANGE=8;                                      // w,b ∈ [−8, 8]
+  const sig=z=>1/(1+Math.exp(-z));
+  const rng=mulberry(313);
+  const ALVOS = {
+    sig:    {nome:'Sigmoide', g:x=> sig(3.5*x+1.2)},
+    reta:   {nome:'Reta',     g:x=> 0.5+0.42*x},
+    degrau: {nome:'Degrau',   g:x=> x>0?1:0},
+    pulso:  {nome:'Pulso',    g:x=> (x>-0.7&&x<0.2)?1:0},
+  };
+  let alvoAtual='sig';
+  const X=[]; let Y=[];
+  function geraDados(){
+    X.length=0;
+    for(let i=0;i<24;i++) X.push(-1+2*i/23+(rng()-0.5)*0.05);
+    Y = X.map(x=> Math.max(0.02, Math.min(0.98, ALVOS[alvoAtual].g(x)+(rng()-0.5)*0.12)));
+  }
+  // erro quadrático médio (idem aba 4)
+  function L(w,b){ let s=0; for(let i=0;i<X.length;i++){ const d=sig(w*X[i]+b)-Y[i]; s+=d*d; } return s/X.length; }
+  function grad(w,b){ let gw=0,gb=0; for(let i=0;i<X.length;i++){ const p=sig(w*X[i]+b), c=2*(p-Y[i])*p*(1-p); gw+=c*X[i]; gb+=c; } return [gw/X.length, gb/X.length]; }
+
+  // paisagem pré-computada (escala log, idem aba 4)
+  const G=110, campo=new Float32Array(G*G), bruto=new Float32Array(G*G);
+  const mapa=document.createElement('canvas'); mapa.width=G; mapa.height=G;
+  let lmin=1e9, lmax=-1e9, Lfundo=1e9;
+  function precomputaMapa(){
+    lmin=1e9; lmax=-1e9; Lfundo=1e9;
+    for(let j=0;j<G;j++) for(let i=0;i<G;i++){ const w=-RANGE+2*RANGE*(i+0.5)/G, b=-RANGE+2*RANGE*(j+0.5)/G; const v=L(w,b); bruto[j*G+i]=v; if(v<Lfundo)Lfundo=v; }
+    for(let kk=0;kk<G*G;kk++){ const v=Math.log(bruto[kk]-Lfundo+0.01); campo[kk]=v; if(v<lmin)lmin=v; if(v>lmax)lmax=v; }
+    const mc=mapa.getContext('2d'), img=mc.createImageData(G,G);
+    for(let j=0;j<G;j++) for(let i=0;i<G;i++){ const t=(campo[j*G+i]-lmin)/(lmax-lmin);
+      const r=Math.round(235-(235-22)*t), g=Math.round(248-(248-53)*t), bl=Math.round(240-(240-124)*t);
+      const kk=((G-1-j)*G+i)*4; img.data[kk]=r; img.data[kk+1]=g; img.data[kk+2]=bl; img.data[kk+3]=255; }
+    mc.putImageData(img,0,0);
+  }
+  const WX=w=> M.x+(w+RANGE)/(2*RANGE)*M.w, BY=b=> M.y+M.h-(b+RANGE)/(2*RANGE)*M.h;
+
+  let k=6, pts=[], rodando=false, raf=null, thetaBar=null;
+  const CAP=0.5, ETA=6;
+
+  function inicia(){
+    para();
+    pts=[]; thetaBar=null;
+    for(let i=0;i<k;i++){ const p={w:(rng()*2-1)*7, b:(rng()*2-1)*7, vivo:true, passos:0, memL:1e9, memP:0, trilha:[]};
+      p.trilha.push([p.w,p.b]); pts.push(p); }
+    $('v5-log').innerHTML = `${k} pontos de partida sorteados. Rode as descidas — no final, a curva azul mostra a média θ̄ dos parâmetros.`;
+    desenha(); hud();
+  }
+
+  function umPasso(p){
+    const [gw,gb]=grad(p.w,p.b);
+    const n=Math.hypot(gw,gb)||1e-12;
+    if(n<1e-6 || p.passos>=4000){ p.vivo=false; return; }          // vale de verdade ou teto
+    if(p.passos-p.memP>=240){                                       // platô: L não melhora há 240 passos
+      const v=L(p.w,p.b);
+      if(v>p.memL-1e-7){ p.vivo=false; return; }
+      p.memL=v; p.memP=p.passos;
+    }
+    const len=Math.min(CAP, ETA*n);
+    p.w=Math.max(-RANGE,Math.min(RANGE, p.w-gw/n*len));
+    p.b=Math.max(-RANGE,Math.min(RANGE, p.b-gb/n*len));
+    p.passos++; p.trilha.push([p.w,p.b]);
+  }
+
+  function quadro(){
+    if(!rodando) return;
+    for(let s=0;s<3;s++) pts.forEach(p=>{ if(p.vivo) umPasso(p); });
+    if(!pts.some(p=>p.vivo)){
+      para();
+      const wm=pts.reduce((s,p)=>s+p.w,0)/k, bm=pts.reduce((s,p)=>s+p.b,0)/k;
+      thetaBar={w:wm, b:bm};
+      const melhor=pts.reduce((a,p)=>Math.min(a,L(p.w,p.b)), 1e9);
+      const gapL=L(wm,bm)-melhor;
+      const extra = gapL>1e-6 ? ` — L(θ̄) acima do melhor: a média não precisa ser um vale.`
+                  : gapL<-1e-6 ? ` — e θ̄ supera todas: a média ficou mais fundo que cada solução.`
+                  : ` — θ̄ no mesmo nível das soluções.`;
+      $('v5-log').innerHTML = `Todas as ${k} descidas pararam. <b>θ̄ = (${fmt(wm)}, ${fmt(bm)})</b> · L(θ̄) = ${fmt(L(wm,bm),4)} · melhor individual = ${fmt(melhor,4)}` + extra;
+    }
+    desenha(); hud();
+    if(rodando) raf=requestAnimationFrame(quadro);
+  }
+  function roda(){ if(!pts.some(p=>p.vivo)) return; rodando=true; $('v5-run').textContent='❚❚ Pausar'; raf=requestAnimationFrame(quadro); }
+  function para(){ rodando=false; if(raf) cancelAnimationFrame(raf); $('v5-run').textContent='▶ Rodar k descidas'; }
+  toggleMedia = ()=> rodando ? para() : roda();
+
+  function desenha(){
+    ctx.clearRect(0,0,W,H);
+    // ---- mapa
+    ctx.imageSmoothingEnabled=true;
+    ctx.drawImage(mapa, M.x, M.y, M.w, M.h);
+    ctx.strokeStyle=COR.linha; ctx.strokeRect(M.x,M.y,M.w,M.h);
+    ctx.fillStyle=COR.cinza; ctx.font='bold 13px "Fira Sans",sans-serif';
+    ctx.fillText('Mapa do erro L(w, b) — claro = vale, escuro = topo', M.x, M.y-10);
+    ctx.fillText('peso w →', M.x+M.w/2-30, M.y+M.h+22);
+    ctx.save(); ctx.translate(M.x-30, M.y+M.h/2+22); ctx.rotate(-Math.PI/2); ctx.fillText('viés b →',0,0); ctx.restore();
+    ctx.font='11px "Fira Mono",monospace';
+    ctx.fillText('−8', M.x-4, M.y+M.h+12); ctx.fillText('8', M.x+M.w-6, M.y+M.h+12);
+    ctx.fillText('8', M.x-16, M.y+10); ctx.fillText('−8', M.x-22, M.y+M.h);
+    // trajetórias das k descidas
+    for(const p of pts){
+      ctx.strokeStyle='rgba(233,161,0,0.6)'; ctx.lineWidth=1.4; ctx.beginPath();
+      p.trilha.forEach(([w,b],i)=> i?ctx.lineTo(WX(w),BY(b)):ctx.moveTo(WX(w),BY(b)));
+      ctx.stroke();
+    }
+    // partida (anel branco) e parada (dourado)
+    for(const p of pts){
+      const [w0,b0]=p.trilha[0], [w1,b1]=p.trilha[p.trilha.length-1];
+      ctx.beginPath(); ctx.arc(WX(w0),BY(b0),3.4,0,7); ctx.fillStyle='#fff'; ctx.fill();
+      ctx.strokeStyle=COR.cinza; ctx.lineWidth=1.2; ctx.stroke();
+      ctx.beginPath(); ctx.arc(WX(w1),BY(b1),3.6,0,7); ctx.fillStyle= p.vivo? '#fff':COR.dourado; ctx.fill();
+      ctx.strokeStyle=COR.cinza; ctx.stroke();
+    }
+    // média θ̄
+    if(thetaBar){
+      const px=WX(thetaBar.w), py=BY(thetaBar.b);
+      ctx.beginPath(); ctx.arc(px,py,8,0,7); ctx.fillStyle='#fff'; ctx.fill();
+      ctx.lineWidth=3.5; ctx.strokeStyle=COR.azul; ctx.stroke();
+      ctx.fillStyle=COR.azul; ctx.font='bold 14px "Fira Mono",monospace'; ctx.fillText('θ̄', px+10, py-8);
+    }
+    // ---- ajuste da função
+    ctx.strokeStyle=COR.linha; ctx.strokeRect(F.x,F.y,F.w,F.h);
+    ctx.fillStyle=COR.azul; ctx.font='bold 13px "Fira Sans",sans-serif';
+    ctx.fillText('O que os parâmetros representam: ŷ = σ(w·x + b)', F.x, F.y-10);
+    const fx=x=>F.x+(x+1.05)/2.1*F.w, fy=y=>F.y+F.h-8-y*(F.h-16);
+    ctx.strokeStyle=COR.linha; ctx.beginPath(); ctx.moveTo(F.x,fy(0)); ctx.lineTo(F.x+F.w,fy(0)); ctx.moveTo(F.x,fy(1)); ctx.lineTo(F.x+F.w,fy(1)); ctx.stroke();
+    // curvas das k soluções (finas, cinza)
+    for(const p of pts){
+      ctx.strokeStyle = p.vivo? 'rgba(85,96,122,0.28)' : 'rgba(85,96,122,0.55)';
+      ctx.lineWidth = p.vivo? 1 : 1.6;
+      ctx.beginPath();
+      for(let i=0;i<=120;i++){ const x=-1.05+2.1*i/120, y=fy(sig(p.w*x+p.b)); i?ctx.lineTo(fx(x),y):ctx.moveTo(fx(x),y); }
+      ctx.stroke();
+    }
+    // residuais + curva da média
+    if(thetaBar){
+      for(let i=0;i<X.length;i++){ const p=sig(thetaBar.w*X[i]+thetaBar.b);
+        ctx.strokeStyle='rgba(179,18,27,0.5)'; ctx.lineWidth=1.6; ctx.beginPath(); ctx.moveTo(fx(X[i]),fy(Y[i])); ctx.lineTo(fx(X[i]),fy(p)); ctx.stroke(); }
+      ctx.strokeStyle=COR.azul; ctx.lineWidth=3.4; ctx.beginPath();
+      for(let i=0;i<=120;i++){ const x=-1.05+2.1*i/120, y=fy(sig(thetaBar.w*x+thetaBar.b)); i?ctx.lineTo(fx(x),y):ctx.moveTo(fx(x),y); }
+      ctx.stroke();
+    }
+    // dados
+    for(let i=0;i<X.length;i++){ ctx.beginPath(); ctx.arc(fx(X[i]),fy(Y[i]),4.5,0,7); ctx.fillStyle=COR.azulClaro; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=1.2; ctx.stroke(); }
+    ctx.fillStyle=COR.cinza; ctx.font='12px "Fira Mono",monospace';
+    ctx.fillText('cinza = k soluções · azul = média θ̄ · traços vermelhos = erro da média', F.x, F.y+F.h+16);
+  }
+
+  function hud(){
+    $('v5-k').textContent = k;
+    const vivas = pts.filter(p=>p.vivo).length;
+    $('v5-feitas').textContent = `${k-vivas}/${k}`;
+    const melhor = pts.reduce((a,p)=>Math.min(a,L(p.w,p.b)), 1e9);
+    if(thetaBar){
+      $('v5-tb').textContent = `(${fmt(thetaBar.w)}, ${fmt(thetaBar.b)})`;
+      $('v5-ltb').textContent = fmt(L(thetaBar.w,thetaBar.b),4);
+      $('v5-melhor').textContent = fmt(melhor,4);
+      $('v5-gap').textContent = fmt(L(thetaBar.w,thetaBar.b)-melhor,4);
+    } else {
+      $('v5-tb').textContent='—'; $('v5-ltb').textContent='—'; $('v5-melhor').textContent='—'; $('v5-gap').textContent='—';
+    }
+    const bd=$('v5-badge');
+    if(rodando){ bd.textContent='descendo…'; bd.className='badge rodando'; }
+    else if(thetaBar){ bd.textContent='θ̄ pronta ✓'; bd.className='badge ok'; }
+    else { bd.textContent='parado'; bd.className='badge'; }
+  }
+
+  $('v5-run').addEventListener('click', ()=>toggleMedia());
+  $('v5-reset').addEventListener('click', ()=>inicia());
+  $('v5-k-sl').addEventListener('input', e=>{ k=+e.target.value; $('v5-k-out').textContent=k; inicia(); });
+  document.querySelectorAll('[data-g5]').forEach(btn=>btn.addEventListener('click', ()=>{
+    document.querySelectorAll('[data-g5]').forEach(b=>b.classList.remove('ligado'));
+    btn.classList.add('ligado'); alvoAtual=btn.dataset.g5;
+    geraDados(); precomputaMapa(); inicia();
+  }));
+
+  geraDados(); precomputaMapa(); inicia();
 })();
 </script>
 </body>
