@@ -21,7 +21,8 @@ licença registrados aqui e no script de download.
 | 8 | idem | `papert.jpg` | [Seymour Papert](https://commons.wikimedia.org/wiki/File:Seymour_Papert.jpg) | Matematicamente.it | CC BY-SA 3.0 |
 | 9 | idem | `rumelhart.jpg` | [David Rumelhart (IJCNN 1991)](https://commons.wikimedia.org/wiki/File:DavidRumelhart-IJCNNseattle1991-07-08.jpg) | Laniakea-rubikon | CC BY-SA 4.0 |
 | 10 | O que uma rede profunda fez pela biologia | `alphafold-tmem253.jpg` | [TMEM253 AlphaFold Predicted Structure](https://commons.wikimedia.org/wiki/File:TMEM253_AlphaFold_Predicted_Structure.jpg) | AlphaFold DB (EMBL-EBI) | CC0 |
-| 11 | A hierarquia que emerge sozinha | `alexnet-arch.png` | [AlexNet architecture](https://commons.wikimedia.org/wiki/File:AlexNet_architecture.png) | Daniel Voigt Godoy | CC BY 4.0 |
+| 11 | A hierarquia que emerge sozinha | `camadas-googlenet.png` | [Feature Visualization (distill.pub, 2017)](https://distill.pub/2017/feature-visualization/) — montagem de 16 canais do apêndice "handpicked" (GoogLeNet) | Olah, Mordvintsev & Schubert | CC BY 4.0 |
+| 11b | (reserva — não usada nos slides) | `alexnet-arch.png` | [AlexNet architecture](https://commons.wikimedia.org/wiki/File:AlexNet_architecture.png) | Daniel Voigt Godoy | CC BY 4.0 |
 | 12 | (reserva — não usada nos slides) | `gpu-tesla.jpg` | [NvidiaTesla](https://commons.wikimedia.org/wiki/File:NvidiaTesla.jpg) | en:User:Mahogny | domínio público |
 
 Observações:
@@ -29,9 +30,16 @@ Observações:
 - A foto antiga do Hinton (Eviatar Bach, "Geoffrey Hinton at Cambridge")
   não existe mais no Commons com esse nome; foi substituída pela foto da
   coletiva do Nobel 2024 (Hopfield + Hinton), mais atual e temática.
-- `gpu-tesla.jpg` ficou de reserva: a caixa "Hardware" do slide "Por que
-  só agora?" não comportou a foto sem estourar o frame (padrão zero
-  Overfull). Ela pode ser aproveitada em aulas sobre treinamento/GPUs.
+- `camadas-googlenet.png` é uma **montagem original** feita com as
+  visualizações do apêndice "handpicked" do artigo Feature Visualization
+  (distill.pub, 2017): 4 camadas (mixed3a → mixed4a → mixed5a → mixed5b)
+  × 4 neurônios reais cada, com rótulos em português — mostra o que cada
+  camada aprendeu sozinha, sem ninguém programar "detecte uma borda".
+- `gpu-tesla.jpg` e `alexnet-arch.png` ficaram de reserva: a caixa
+  "Hardware" do slide "Por que só agora?" não comportou a foto sem
+  estourar o frame, e o slide da hierarquia ficou com a montagem de
+  neurônios reais no lugar do diagrama de arquitetura. Ambas podem ser
+  aproveitadas em aulas sobre CNNs/treinamento.
 - Candidatas avaliadas e descartadas: retrato do Hebb (só existe fair-use
   na en-wiki), retrato do McCulloch (sem foto livre no Commons), figura
   original do AlexNet do paper (copyright NeurIPS), figura do Transformer
@@ -109,8 +117,10 @@ de rede no dia da verificação, mas é a referência canônica — mantida.
    desenho de Cajal + a ponte para McCulloch–Pitts.
 6. **"Perceptrons são portas lógicas"** e **"Uma camada oculta resolve o XOR"**:
    tikzpictures agora em `\scalebox` (cabiam 1–2 mm fora da coluna).
-7. **"A hierarquia que emerge sozinha"**: figura do AlexNet (redesenhada, CC BY 4.0)
-   no lugar do diagrama de blocos.
+7. **"A hierarquia que emerge sozinha"**: montagem de 16 neurônios reais do
+   GoogLeNet (4 camadas × 4 canais, do apêndice do artigo Feature Visualization,
+   distill.pub 2017, CC BY 4.0) mostrando o que cada camada aprendeu — texturas,
+   partes, padrões e objetos. O subtítulo agora aponta para as imagens.
 8. **Novo frame "Para saber mais — sites e vídeos por assunto"** (antes de "Para
    casa"): os 13 links da seção 2.
 9. **Referências**: créditos de todas as imagens.

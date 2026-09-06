@@ -923,30 +923,25 @@ for epoca in range(10):
 
 % ------------------------------------------------------------
 \begin{frame}{A hierarquia que emerge sozinha}
-  \framesubtitle{Ninguém programou ``detecte uma borda'' — a rede organizou-se assim durante o treino}
+  \framesubtitle{Ninguém programou ``detecte uma borda'' — as imagens abaixo são o que a rede aprendeu sozinha}
 
   \begin{columns}[T]
     \begin{column}{0.58\textwidth}
-      \fotoslot{alexnet-arch.png}{6.4cm}{2.6cm}
-        {AlexNet (2012): a hierarquia de características em 8 camadas — da borda ao objeto}
-        {D.\ V.\ Godoy, Wikimedia Commons, CC BY 4.0}
+      \fotoslot{camadas-googlenet.png}{5.0cm}{3.2cm}
+        {O que cada camada do GoogLeNet aprendeu sozinha: texturas, partes, padrões e objetos}
+        {Olah, Mordvintsev \& Schubert — Feature Visualization, distill.pub, 2017, CC BY 4.0}
     \end{column}
     \begin{column}{0.38\textwidth}
-      \begin{itemize}\setlength{\itemsep}{0.2ex}
-        \item Em reconhecimento facial, cada camada aprende um nível de
-              abstração
-        \item A hierarquia \emph{emerge} do treinamento — é isso que a
-              palavra ``profundo'' compra
+      \begin{itemize}\setlength{\itemsep}{0.25ex}
+        \item Cada imagem é um \alert{neurônio real} do GoogLeNet — ninguém
+              programou ``detecte uma borda''
+        \item A hierarquia \emph{emerge} do treinamento: cedo, texturas;
+              fundo, partes e objetos
+        \item O XOR em escala: lá, ``algum ligado'' e ``ambos ligados'';
+              aqui, bordas, olhos e rostos
       \end{itemize}
     \end{column}
   \end{columns}
-
-  \vspace{-0.2em}
-  \begin{ideiabox}
-    É a versão grande do XOR: lá, a camada oculta construiu ``algum ligado''
-    e ``ambos ligados''; aqui, constrói bordas, partes e rostos. O mecanismo
-    é o mesmo — muda a escala.
-  \end{ideiabox}
 \end{frame}
 
 % ------------------------------------------------------------
@@ -1328,7 +1323,8 @@ for passo in range(5000):
   y Cajal (domínio público); F.\ Bello (domínio público); F.\ Rosenblatt
   (CC BY-SA 4.0); Stanford Today (domínio público); S.\ Woodworth (CC BY 3.0);
   Matematicamente.it (CC BY-SA 3.0); D.\ Rumelhart (CC BY-SA 4.0); AlphaFold
-  DB (CC0); D.\ Godoy (CC BY 4.0); U.S.\ Navy (domínio público).\par}
+  DB (CC0); Olah, Mordvintsev \& Schubert, \emph{Feature Visualization},
+  distill.pub (CC BY 4.0); U.S.\ Navy (domínio público).\par}
 \end{frame}
 
 \end{document}

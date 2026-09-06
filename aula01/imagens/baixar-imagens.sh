@@ -84,4 +84,16 @@ curl -sSL -A "$UA" -o alexnet-arch.png \
 curl -sSL -A "$UA" -o gpu-tesla.jpg \
   "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/NvidiaTesla.jpg/1280px-NvidiaTesla.jpg"
 
+# 13. camadas-googlenet.png — MONTAGEM (não é download direto):
+#     grade 4×4 de neurônios reais do GoogLeNet, do apêndice "handpicked"
+#     de Olah, Mordvintsev & Schubert, "Feature Visualization",
+#     Distill, 2017 — CC BY 4.0 (distill.pub/2017/feature-visualization).
+#     Fontes (repositório distillpub/post--feature-visualization):
+#       public/appendix/handpicked/mixed3a-{00043,00061,00209,00230}.png
+#       public/appendix/handpicked/mixed4a-{00500,00501,00503,00505}.png
+#       public/appendix/handpicked/mixed5a-{00004,00009,00132,00557}.png
+#       public/appendix/handpicked/mixed5b-{00017,00023,00357,00806}.png
+#     O arquivo já está commitado; para regenerar, baixe as 16 fontes e
+#     monte a grade (4 linhas = camadas, 4 colunas = canais) com PIL.
+
 echo "OK: $(ls -1 | wc -l) arquivos em $(pwd)"
