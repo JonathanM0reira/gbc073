@@ -11,7 +11,7 @@ Materiais da disciplina **GBC073 — Inteligência Computacional** (UFU/FACOM): 
 | 1 — Introdução: redes neurais como aproximadores universais | [PDF](aula01/aula01.pdf) | — | [Perceptron](https://albertiniufu.github.io/gbc073/aula01/simulador-perceptron.html) | — |
 | 2 — O que uma rede consegue representar | [PDF](aula02/aula02.pdf) | — | [Representatividade](https://albertiniufu.github.io/gbc073/aula02/aula02-simulador-representatividade.html) | — |
 | 3 — Aprendendo a rede — Parte 1 | [PDF](aula03/aula03.pdf) | — | [Lab](https://albertiniufu.github.io/gbc073/aula03/aula03-lab.html) | — |
-| 4 — Aprendendo a rede — Parte 2: retropropagação | [PDF](aula04/aula04.pdf) | — | — | — |
+| 4 — Aprendendo a rede — Parte 2: retropropagação | [PDF](aula04/aula04.pdf) | — | [Lab](https://albertiniufu.github.io/gbc073/aula04/aula04-lab.html)— | — |
 | 5 — Treinar é otimizar: descida de gradiente e suas variações | [PDF](aula05/aula05.pdf) | — | — | — |
 | 6 — A rede que decora: sobreajuste, regularização e generalização | [PDF](aula06/aula06.pdf) | — | — | — |
 | 7 — Redes que enxergam: convolução | [PDF](aula07/aula07.pdf) | — | — | — |
