@@ -25,18 +25,28 @@ SEMENTES = (0, 1, 2)
 # >>> SUA SUBMISSÃO — edite apenas esta classe <<<
 # =============================================================================
 class Submissao:
-    DIM_MAX = DIM_MAX
+    DIM_MAX = 64
 
     def fit(self, X: torch.Tensor) -> None:
         """Opcional: veja X de treino (sem rótulos) para padronizar, sortear projeções etc."""
-        self.mu, self.sd = X.mean(0), X.std(0) + 1e-8
+        self.mu = X.mean(dim=0)
+        self.sd = X.std(dim=0) + 1e-8
+        d = X.shape[1]
+        espaco_livre = self.DIM_MAX - (d*3)
+        if espaco_livre > 0:
+            torch.manual_seed(42)
+            self.W = torch.randn(d,espaco_livre)/math.sqrt(d)
 
     def phi(self, X: torch.Tensor) -> torch.Tensor:
         """(n, d) -> (n, d'), com d < d' <= 64. Exemplo: padroniza e acrescenta os quadrados."""
+
         Xs = (X - self.mu) / self.sd
-        return torch.cat([Xs, Xs ** 2], dim=1)      # d' = 2d  (troque por algo melhor!)
+        features = [Xs]
+        features.append(torch.sin(Xs*2.0*math.pi))
+        features.append(torch.cos(Xs*2.0*math.pi))
+        X_expandido = torch.cat(features,dim=1)
 
-
+        return X_expandido[:, :self.DIM_MAX]
 # =============================================================================
 # Harness (não edite daqui para baixo)
 # =============================================================================
